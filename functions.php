@@ -3,10 +3,29 @@ function esc($text) {
     return isset($text) ? htmlspecialchars($text) : null;
 }
 
+function exit_http_code($http_code) {
+    http_response_code($http_code);
+    exit();
+}
+
+function exit_error($error) {
+    global $title, $user_name;
+    $page_content = include_template('error.php', ['error' => $error]);
+
+    $layout_content = include_template('layout.php', [
+        'content' => $page_content,
+        'title' => $title,
+        'user_name' => $user_name
+    ]);
+
+    print($layout_content);
+    exit();
+}
+
 function task_count($tasks, $project) {
     $count = 0;
     foreach ($tasks as $task) {
-        if ($task['category'] == $project) {
+        if ($task['project'] == $project) {
             $count++;
         }
     }

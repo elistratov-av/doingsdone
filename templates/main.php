@@ -4,9 +4,9 @@
     <nav class="main-navigation">
         <ul class="main-navigation__list">
             <?php foreach ($projects as $prj): ?>
-                <li class="main-navigation__list-item">
-                    <a class="main-navigation__list-item-link" href="#"><?= esc($prj) ?></a>
-                    <span class="main-navigation__list-item-count"><?= task_count($tasks, $prj) ?></span>
+                <li class="main-navigation__list-item <?php if ($id == $prj['id']):?>main-navigation__list-item--active<?php endif;?>">
+                    <a class="main-navigation__list-item-link" href="index.php?id=<?= $prj['id'] ?>"><?= esc($prj['name']) ?></a>
+                    <span class="main-navigation__list-item-count"><?= task_count($tasks, $prj['name']) ?></span>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -43,6 +43,7 @@
     <table class="tasks">
         <?php foreach ($tasks as $task): ?>
             <?php
+            if ($id && $task['proj_id'] != $id) continue;
             if ($task['completed'] && !$show_complete_tasks) continue;
 
             $completed = $task['completed'] ? 'task--completed' : '';
