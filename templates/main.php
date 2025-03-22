@@ -1,19 +1,10 @@
 <section class="content__side">
-    <h2 class="content__side-heading">Проекты</h2>
-
-    <nav class="main-navigation">
-        <ul class="main-navigation__list">
-            <?php foreach ($projects as $prj): ?>
-                <li class="main-navigation__list-item <?php if ($id == $prj['id']):?>main-navigation__list-item--active<?php endif;?>">
-                    <a class="main-navigation__list-item-link" href="index.php?id=<?= $prj['id'] ?>"><?= esc($prj['name']) ?></a>
-                    <span class="main-navigation__list-item-count"><?= task_count($tasks, $prj['name']) ?></span>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
-
-    <a class="button button--transparent button--plus content__side-button"
-       href="pages/form-project.html" target="project_add">Добавить проект</a>
+    <?= include_template('projects.php', [
+    'show_complete_tasks' => $show_complete_tasks,
+    'id' => $id,
+    'projects' => $projects,
+    'tasks' => $tasks
+]) ?>
 </section>
 
 <main class="content__main">
@@ -54,12 +45,14 @@
                 <td class="task__select">
                     <label class="checkbox task__checkbox">
                         <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1" <?= $checked ?>>
-                        <span class="checkbox__text"><?= esc($task['title']) ?></span>
+                        <span class="checkbox__text"><?= esc($task['name']) ?></span>
                     </label>
                 </td>
 
                 <td class="task__file">
-                    <a class="download-link" href="#">Home.psd</a>
+                    <?php if ($task['file']): ?>
+                    <a class="download-link" href="<?= $task['file'] ?>" download><?= esc(basename($task['file'])) ?></a>
+                    <?php endif; ?>
                 </td>
 
                 <td class="task__date"><?= esc($task['date_end']) ?></td>

@@ -13,7 +13,7 @@ VALUES
 	('Авто', 1);
 
 INSERT INTO tasks
-	(title, date_end, completed, project_id, user_id, date_creation)
+	(name, date_end, completed, project_id, user_id, date_creation)
 VALUES
 	('Собеседование в IT компании', '2025-03-01', 0, (SELECT id FROM projects WHERE name = 'Работа'), 1, '2025-02-01'),
 	('Выполнить тестовое задание', '2025-03-12', 0, (SELECT id FROM projects WHERE name = 'Работа'), 1, '2025-02-01'),
@@ -28,7 +28,7 @@ FROM projects p
 WHERE user_id = 1;
 
 -- получить список из всех задач для одного проекта
-SELECT id, title, file, completed, date_end
+SELECT id, name, file, completed, date_end
 FROM tasks t 
 WHERE project_id = 3;
 
@@ -39,5 +39,5 @@ WHERE id = 3;
 
 -- обновить название задачи по её идентификатору
 UPDATE tasks 
-SET title = 'Заказать пиццу'
+SET name = 'Заказать пиццу'
 WHERE id = 6;
