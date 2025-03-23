@@ -1,4 +1,5 @@
 <?php
+global $con, $title, $is_auth, $user, $show_complete_tasks;
 require_once 'helpers.php';
 require_once 'functions.php';
 require_once 'data.php';
@@ -15,13 +16,13 @@ if ($id) {
     if (!$exists_prj) exit_http_code(404);
 }
 
-$sql = get_query_projects($user_id);
+$sql = get_query_projects($user['id']);
 $res = mysqli_query($con, $sql);
 if (!$res) exit_error(mysqli_error($con));
 $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
 $projects_id = array_column($projects, "id");
 
-$sql = get_query_tasks($user_id);
+$sql = get_query_tasks($user['id']);
 $res = mysqli_query($con, $sql);
 if (!$res) exit_error(mysqli_error($con));
 $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -94,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             'errors' => $errors
         ]);
     } else {
-        $sql = get_query_create_task($user_id);
+        $sql = get_query_create_task($user['id']);
         $stmt = db_get_prepare_stmt($con, $sql, [
             $task['name'], $task['path'] ?? '', $task['date_end'] ?: null, $task['proj_id']]);
         $res = mysqli_stmt_execute($stmt);
@@ -102,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         if ($res) {
             $task_id = mysqli_insert_id($con);
             header("Location: /index.php");
-            exit();
+            exit;
         } else {
             exit_error(mysqli_error($con));
         }
@@ -112,7 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $layout_content = include_template('layout.php', [
     'content' => $page_content,
     'title' => $title,
-    'user_name' => $user_name
+    'is_auth' => $is_auth,
+    'user' => $user
 ]);
 
 print($layout_content);

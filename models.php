@@ -27,3 +27,15 @@ function get_query_exists_project($id) {
         ELSE 0
         END AS r";
 }
+
+function get_query_users() {
+    return "SELECT email, name FROM users";
+}
+
+function get_query_create_user() {
+    return "INSERT INTO users (email, password, name) VALUES (?, ?, ?)";
+}
+
+function get_query_login($email) {
+    return "SELECT id, email, name, password FROM users WHERE email = '$email'";
+}

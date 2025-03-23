@@ -5,7 +5,7 @@ function esc($text) {
 
 function exit_http_code($http_code) {
     http_response_code($http_code);
-    exit();
+    exit;
 }
 
 function exit_error($error) {
@@ -19,7 +19,7 @@ function exit_error($error) {
     ]);
 
     print($layout_content);
-    exit();
+    exit;
 }
 
 function task_count($tasks, $project) {
@@ -60,5 +60,11 @@ function validate_date($date) {
         } else {
             return "Содержимое поля «дата завершения» должно быть датой в формате «ГГГГ-ММ-ДД»";
         }
+    }
+}
+
+function validate_email ($email) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "E-mail должен быть корректным";
     }
 }
