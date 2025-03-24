@@ -20,7 +20,7 @@ $sql = get_query_projects($user['id']);
 $res = mysqli_query($con, $sql);
 if (!$res) exit_error(mysqli_error($con));
 $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
-$project_ids = array_column($projects, "id");
+$project_names = array_column($projects, "name");
 
 $sql = get_query_tasks($user['id']);
 $res = mysqli_query($con, $sql);
@@ -28,41 +28,34 @@ if (!$res) exit_error(mysqli_error($con));
 $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    $task = [
+    $project = [
         'name' => '',
-        'proj_id' => '',
-        'date_end' => '',
     ];
 
-    $page_content = include_template('add-task.php', [
+    $page_content = include_template('add-project.php', [
         'show_complete_tasks' => $show_complete_tasks,
         'projects' => $projects,
         'tasks' => $tasks,
         'id' => $id,
-        'task' => $task,
+        'project' => $project,
         'errors' => null
     ]);
 } else {
-    $required = ["name", "proj_id"];
+    $required = ["name"];
     $errors = [];
 
     $rules = [
-        "proj_id" => function ($value) use ($project_ids) {
-            return validate_project($value, $project_ids);
+        "name" => function ($value) use ($project_names) {
+            return validate_project_name($value, $project_names);
         },
-        "date_end" => function ($value) {
-            return validate_date($value);
-        }
     ];
 
-    $task = filter_input_array(INPUT_POST,
+    $project = filter_input_array(INPUT_POST,
         [
             "name" => FILTER_DEFAULT,
-            "proj_id" => FILTER_DEFAULT,
-            "date_end" => FILTER_DEFAULT,
         ], true);
 
-    foreach ($task as $field => $value) {
+    foreach ($project as $field => $value) {
         if (isset($rules[$field])) {
             $rule = $rules[$field];
             $errors[$field] = $rule($value);
@@ -74,35 +67,24 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
     $errors = array_filter($errors);
 
-    if (!empty($_FILES['file']['name'])) {
-        $tmp_name = $_FILES['file']['tmp_name'];
-        $path = $_FILES['file']['name'];
-        $ext = pathinfo($path, PATHINFO_EXTENSION);
-        if ($ext) $ext = '.' . $ext;
-
-        $filename = uniqid() . $ext;
-        $task['path'] = 'uploads/'. $filename;
-        move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'. $filename);
-    }
-
     if (count($errors)) {
-        $page_content = include_template('add-task.php', [
+        $page_content = include_template('add-project.php', [
             'show_complete_tasks' => $show_complete_tasks,
             'projects' => $projects,
             'tasks' => $tasks,
             'id' => $id,
-            'task' => $task,
+            'project' => $project,
             'errors' => $errors
         ]);
     } else {
-        $sql = get_query_create_task($user['id']);
+        $sql = get_query_create_project($user['id']);
         $stmt = db_get_prepare_stmt($con, $sql, [
-            $task['name'], $task['path'] ?? '', $task['date_end'] ?: null, $task['proj_id']]);
+            $project['name']]);
         $res = mysqli_stmt_execute($stmt);
 
         if ($res) {
-            $task_id = mysqli_insert_id($con);
-            header("Location: /index.php");
+            $project_id = mysqli_insert_id($con);
+            header("Location: /index.php?id={$project_id}");
             exit;
         } else {
             exit_error(mysqli_error($con));

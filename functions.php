@@ -40,9 +40,25 @@ function less_than_day($datetime) {
     return ($date_ts - $ts) / $secs_in_hour <= 24;
 }
 
+function normalize_filter($filter) {
+    if (isset($filter)) {
+        switch ($filter) {
+            case 'today':case 'tomorrow':case 'expired':
+                return $filter;
+        }
+    }
+    return '';
+}
+
 function validate_project ($id, $allowed_list) {
     if (!in_array($id, $allowed_list)) {
         return "Указан несуществующий проект";
+    }
+}
+
+function validate_project_name ($name, $existing_list) {
+    if (in_array($name, $existing_list)) {
+        return "Проект с таким именем уже существует";
     }
 }
 
