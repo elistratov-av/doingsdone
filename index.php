@@ -33,7 +33,9 @@ $res = mysqli_query($con, $sql);
 if (!$res) exit_error(mysqli_error($con));
 $projects = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
-$sql = get_query_tasks($user['id']);
+$search = trim(filter_input(INPUT_GET, 'search'));
+
+$sql = get_query_tasks($user['id'], $search, $con);
 $res = mysqli_query($con, $sql);
 if (!$res) exit_error(mysqli_error($con));
 $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -41,6 +43,7 @@ $tasks = mysqli_fetch_all($res, MYSQLI_ASSOC);
 $page_content = include_template('main.php', [
     'show_complete_tasks' => $show_complete_tasks,
     'id' => $id,
+    'search' => $search,
     'projects' => $projects,
     'tasks' => $tasks
 ]);

@@ -1,11 +1,12 @@
 <?php
-function get_query_tasks($user_id, $id = null) {
+function get_query_tasks($user_id, $search = null, $con = null) {
     $sql = "SELECT t.id, t.name, t.file, t.completed, t.date_end, p.id proj_id, p.name project 
     FROM tasks t 
     JOIN projects p ON t.project_id = p.id
     WHERE t.user_id = $user_id";
-    if ($id) {
-        $sql .= " AND p.id = $id";
+    if ($search) {
+        $search = mysqli_real_escape_string($con, $search);
+        $sql .= " AND MATCH (t.name) AGAINST ('$search')";
     }
     return $sql;
 }
